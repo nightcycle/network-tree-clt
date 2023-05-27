@@ -1,58 +1,63 @@
-import yaml
-from typing import TypedDict, Any, Literal
+import json
+from typing import TypedDict, Any, Literal, Optional
 
 class BuildData(TypedDict):
 	build_as_service: bool
 	client_path: str
 	server_path: str
 
-class TreeData(TypedDict):
-	remote_event: dict
-	remote_function: dict
-	bindable_event: dict
-	bindable_function: 
+class ParameterData(TypedDict):
+	name: str
+	type: str
+
+class TypeData(TypedDict):
+	name: str
+	path: str
+
+class FunctionData(TypedDict):
+	parameters: list[ParameterData]
+	returns: list[str]
+
+class EventData(TypedDict):
+	parameters: list[ParameterData]
+
+class PortData(TypedDict):
+	on_event: Optional[EventData]
+	on_server_event: Optional[EventData]
+	on_client_event: Optional[EventData]
+	on_invoke: Optional[FunctionData]
+	on_server_invoke: Optional[FunctionData]
+	on_client_invoke: Optional[FunctionData]
+
 
 class ConfigData(TypedDict):
 	build: BuildData
-	type_imports: dict[str, str]
-	tree: dict
+	type_imports: list[TypeData]
+	tree: dict[str, PortData]
 
-DEFAULT_YAML_FILE = """
-build: 
-  build_as_service: true
-  server_path: out/Server.luau
-  client_path: out/Server.luau
-type_imports:
-  VehicleData: game/ReplicatedStorage/Shared/Vehicle/VehicleData
-  PlayerData: game/ServerScriptService/Server/Player/Data
-tree:
-  remote_event:
-    Vehicle:
-      OnDestroyed: 
-        vehicleId: string
-        data: VehicleData
-        position: Vector3
-  remote_function:
-      Vehicle:
-      OnDestroyed: 
-        vehicleId: string
-        data: VehicleData
-        position: Vector3
-  bindable_event:
-  bindable_function:  
-"""	
+DEFAULT_JSON_FILE = """
+{
+	"build": {
+		"build_as_service": true,
+		"client_path": "out/Client/NetworkTree.luau",
+		"server_path": "out/Server/NetworkTree.luau"
+	},
+	"type_imports": [],
+	"tree": {}
+}
+"""
 
 def get_config(config_path: str) -> ConfigData:
 	with open(config_path, "r") as config_file:
 		config_content = config_file.read()
-		return yaml.safe_load(config_content)
+		return json.loads(config_content)
 
 def set_config(out_path: str, config_data: ConfigData | None = None):
 	config_content = ""
 	if config_data != None:
-		config_content = yaml.safe_dump(config_data)
+		config_content = json.dumps(config_data, indent=5)
 	elif config_data == None:
-		config_content = DEFAULT_YAML_FILE
+		config_content = DEFAULT_JSON_FILE
 
 	with open(out_path, "w") as config_file:
 		config_file.write(config_content)

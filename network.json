@@ -1,0 +1,46 @@
+{
+	"build": {
+		"build_as_service": true,
+		"client_path": "out/Client/NetworkTree.luau",
+		"server_path": "out/Server/NetworkTree.luau"
+	},
+	"type_imports": [
+		{
+			"name": "VehicleData",
+			"path": "game/ReplicatedStorage/Shared/Vehicle/Data"
+		}
+	],
+	"tree": {
+		"Vehicle": {
+			"Get": {
+				"Data": {
+					"on_server_invoke": {
+						"parameters": [
+							{
+								"name": "companyId",
+								"type": "string"
+							}
+						],
+						"returns": [
+							"{[number]:VehicleData}"
+						]
+					}
+				}
+			},
+			"Set": {
+				"Color": {
+					"on_server_event": [
+						{
+							"name": "vehicleId",
+							"path": "string"
+						},
+						{
+							"name": "color",
+							"path": "Color3"
+						}
+					]
+				}
+			}
+		}
+	}
+}

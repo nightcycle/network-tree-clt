@@ -5,7 +5,7 @@ from src.config import set_config
 from src.build import main as build
 
 def main():
-	config_path = "network.yaml"
+	config_path = "network.json"
 	if 1 in sys.argv:
 		if sys.argv[1] == "init":
 			if 2 in sys.argv:
@@ -15,11 +15,11 @@ def main():
 			return
 		else:
 			config_path = sys.argv[1]
-	
+
 	build(config_path)
 
 # prevent from running twice
 if __name__ == '__main__':
 	multiprocessing.freeze_support()
-	main()		
+	main()
 
